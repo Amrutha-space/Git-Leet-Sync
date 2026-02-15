@@ -1,12 +1,3 @@
-/*
- * LeetCode Solution: Length of Last Word
- * Difficulty: Medium
- * Language: python
- * URL: https://leetcode.com/problems/length-of-last-word/
- * Date: 15/02/2026, 16:20:22
- * Solution: Initial
- */
-
 class Solution:
     def lengthOfLastWord(self, s: str) -> int:
         i, length = len(s) - 1, 0
@@ -17,3 +8,5 @@ class Solution:
             length += 1
             i -= 1
         return length
+
+// Solution 1771152660093
