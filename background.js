@@ -71,38 +71,53 @@ class GitHubSyncService {
   }
 
   // Create or update file in GitHub repository
-  async createOrUpdateFile(token, username, repo, path, content, message, sha = null) {
-    try {
-      const body = {
-        message: message,
-        content: btoa(unescape(encodeURIComponent(content)))
-      };
+  async createOrUpdateFile(token, username, repo, path, content, message) {
 
-      if (sha) {
-        body.sha = sha;
+  const url = `${this.baseURL}/repos/${username}/${repo}/contents/${encodeURIComponent(path)}`;
+
+  let sha = null;
+
+  // ✅ ALWAYS GET LATEST SHA DIRECTLY FROM GITHUB
+  try {
+    const getResponse = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
       }
+    });
 
-      const response = await fetch(`${this.baseURL}/repos/${username}/${repo}/contents/${encodeURIComponent(path)}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`GitHub API error: ${errorData.message || response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error creating/updating file:', error);
-      throw error;
+    if (getResponse.ok) {
+      const existingFile = await getResponse.json();
+      sha = existingFile.sha;   // ⭐ CRITICAL FIX
     }
+  } catch (err) {
+    console.log("File does not exist, creating new file...");
   }
+
+  const body = {
+    message: message,
+    content: btoa(unescape(encodeURIComponent(content))),
+    ...(sha && { sha })         // ⭐ ONLY include sha if exists
+  };
+
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`GitHub API error: ${errorData.message}`);
+  }
+
+  return await response.json();
+}
 
   // Sync solution to GitHub
   async syncSolution(solutionData) {
@@ -137,14 +152,13 @@ class GitHubSyncService {
         : `Add solution for ${problemTitle}`;
 
       const result = await this.createOrUpdateFile(
-        settings.githubToken,
-        settings.username,
-        settings.repository,
-        filePath,
-        fileContent,
-        commitMessage,
-        existingSHA
-      );
+  settings.githubToken,
+  settings.username,
+  settings.repository,
+  filePath,
+  fileContent,
+  commitMessage
+);
 
       return { success: true, url: result.content.html_url };
     } catch (error) {

@@ -374,7 +374,7 @@ class LeetCodeMonitor {
 
   // Generate unique submission ID
   generateSubmissionId(submissionData) {
-    return `${submissionData.slug}-${submissionData.language}-${Date.now()}`;
+    return `${submissionData.slug}-${submissionData.language}`;
   }
 
   // Handle manual sync button click
@@ -398,27 +398,37 @@ class LeetCodeMonitor {
 
   // Sync solution to GitHub via background script
   async syncToGitHub(submissionData) {
-    try {
-      const response = await chrome.runtime.sendMessage({
-        action: 'syncSolution',
-        data: submissionData
-      });
+  try {
 
-      if (response.success) {
-        this.showNotification('Successfully synced to GitHub!', 'success');
+    // ✅ CRITICAL SAFETY CHECK (Prevents undefined crash)
+    if (typeof chrome === "undefined" || !chrome.runtime?.sendMessage) {
+      console.error("Chrome runtime not available");
+      this.showNotification('Extension context not ready', 'error');
+      return;
+    }
+
+    const response = await chrome.runtime.sendMessage({
+      action: 'syncSolution',
+      data: submissionData
+    });
+
+    if (response?.success) {
+      this.showNotification('Successfully synced to GitHub!', 'success');
+
+      if (this.syncButton) {
         this.syncButton.classList.add('sync-success');
-        setTimeout(() => {
-          this.syncButton.classList.remove('sync-success');
-        }, 2000);
-      } else {
-        throw new Error(response.error || 'Unknown sync error');
+        setTimeout(() => this.syncButton.classList.remove('sync-success'), 2000);
       }
 
-    } catch (error) {
-      console.error('GitHub sync error:', error);
-      this.showNotification('Sync failed: ' + error.message, 'error');
+    } else {
+      throw new Error(response?.error || 'Unknown sync error');
     }
+
+  } catch (error) {
+    console.error('GitHub sync error:', error);
+    this.showNotification('Sync failed: ' + error.message, 'error');
   }
+}
 
   // Show custom notification
   showNotification(message, type = 'info') {
