@@ -2,7 +2,7 @@
 
 A Chrome Extension that automatically syncs accepted LeetCode solutions to a GitHub repository.
 
-This tool detects successful submissions on LeetCode and pushes the solution file directly to GitHub using the **GitHub REST API**.
+This tool detects successful submissions on LeetCode and pushes the solution file directly to GitHub using the GitHub REST API.
 
 --- Features
 
