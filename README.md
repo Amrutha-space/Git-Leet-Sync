@@ -13,6 +13,16 @@ This tool detects successful submissions on LeetCode and pushes the solution fil
 ✅ GitHub REST API integration  
 ✅ Manifest V3 compatible  
 
+--- Demo Video
+
+A short walkthrough of the LeetCode GitHub Sync Extension showing:
+- Automatic detection of accepted submissions  
+- Smart file naming & folder organization  
+- Seamless GitHub sync using Personal Access Token  
+
+---  Watch the demo:  
+https://drive.google.com/file/d/1Zsa5C4whTo5qZMJsDGU6kG7BCucuTvRu/view?usp=drive_link
+
 --- Tech Stack
 
 - JavaScript (ES6+)
