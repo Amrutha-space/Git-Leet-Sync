@@ -11,7 +11,7 @@ This tool detects successful submissions on LeetCode and pushes the solution fil
 ✅ Supports multiple programming languages  
 ✅ Custom folder structures (Easy / Medium / Hard)  
 ✅ GitHub REST API integration  
-✅ Manifest V3 compatible  
+✅ Manifest V3 compatible 
 
 --- Demo Video
 
@@ -106,4 +106,4 @@ The extension:
 
 👩‍💻 Author --- AMRUTHA_MJ
 Built as a learning + productivity tool for improving workflow and GitHub automation.
-Feel free to modify any features and if you like project, give it a star 
+Feel free to modify any features and if you like this project, give it a star .
